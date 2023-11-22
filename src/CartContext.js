@@ -46,17 +46,18 @@ const CartProvider = ({ children }) => {
         const response = await axios.get('/product.json');
         const productsWithInitialValues = response.data.products.map((product) => ({
           ...product,
-          quantity: 0, 
-          amount: 0,   
+          quantity: 0,
+          amount: 0,
         }));
         dispatch({ type: 'SET_CART', payload: { products: productsWithInitialValues } });
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
-
+  
     fetchData();
-  }, []);
+  }, [dispatch]);
+  
 
   return (
     <CartContext.Provider value={{ cart, dispatch }}>

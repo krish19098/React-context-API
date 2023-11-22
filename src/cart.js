@@ -1,18 +1,18 @@
-// Cart.js
 import React, { useState, useEffect } from 'react';
 import { useCart } from './CartContext';
 
 const Cart = () => {
   const { cart, dispatch } = useCart();
-  const [cartTotal, setCartTotal] = useState(calculateTotal());
+
+  const calculateTotal = () => {
+    return cart.reduce((total, product) => total + product.amount, 0);
+  };
+
+  const [cartTotal, setCartTotal] = useState(() => calculateTotal());
 
   const calculateSubtotal = () => {
     return cart.reduce((subtotal, product) => subtotal + product.amount, 0);
   };
-
-  function calculateTotal() {
-    return cart.reduce((total, product) => total + product.amount, 0);
-  }
 
   const handleIncrement = (productId) => {
     dispatch({ type: 'INCREMENT_QUANTITY', payload: { productId } });
@@ -25,8 +25,8 @@ const Cart = () => {
   useEffect(() => {
     dispatch({ type: 'UPDATE_AMOUNTS' });
     setCartTotal(calculateTotal());
-  }, [cart]);
-
+  }, [cart, dispatch, calculateTotal]);
+  
   return (
     <div>
       <h1 style={{ textAlign: 'center' }}>Shopping Cart</h1>
