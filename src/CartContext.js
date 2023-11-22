@@ -1,7 +1,16 @@
-import React, { createContext, useContext, useReducer, useEffect } from 'react';
+import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
 import axios from 'axios';
 
 const CartContext = createContext();
+
+const calculateTotal = (products) => {
+  // Calculate the total amount based on the products in the cart
+  let total = 0;
+  products.forEach((product) => {
+    total += (product.price + (product.shipping || 0)) * product.quantity;
+  });
+  return total;
+};
 
 const cartReducer = (state, action) => {
   switch (action.type) {
@@ -54,13 +63,14 @@ const CartProvider = ({ children }) => {
         console.error('Error fetching data:', error);
       }
     };
-  
+
     fetchData();
   }, [dispatch]);
-  
+
+  const memoizedCalculateTotal = useCallback(() => calculateTotal(cart), [cart]);
 
   return (
-    <CartContext.Provider value={{ cart, dispatch }}>
+    <CartContext.Provider value={{ cart, dispatch, calculateTotal: memoizedCalculateTotal }}>
       {children}
     </CartContext.Provider>
   );
